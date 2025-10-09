@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FEDE - Financial Excellence Dashboard</title>
+    
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-black: #1a1a1a;
+            --luxury-gold: #c9a961;
+            --success-green: #27ae60;
+            --alert-red: #e74c3c;
+            --info-blue: #3498db;
+            --white: #ffffff;
+            --gray-50: #f8f9fa;
+            --gray-200: #e9ecef;
+            --gray-400: #adb5bd;
+            --gray-600: #6c757d;
+            --shadow-light: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--gray-50);
+            color: var(--primary-black);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        #root {
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            padding: 30px;
+        }
+
+        /* Utility */
+        .flex { display: flex; }
+        .justify-between { justify-content: space-between; }
+        .items-center { align-items: center; }
+        .mt-4 { margin-top: 1rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .p-4 { padding: 1rem; }
+        .bg-gray { background-color: var(--gray-50); }
+        .rounded-lg { border-radius: 8px; }
+
+        /* Typography */
+        h1 { color: var(--primary-black); font-weight: 800; font-size: 2rem; margin-bottom: 0.5rem; }
+        h2 { color: var(--primary-black); font-weight: 600; font-size: 1.5rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 0.5rem; margin-top: 2rem; margin-bottom: 1rem; }
+        .text-mono { font-family: 'JetBrains Mono', monospace; }
+        .stat-value { font-size: 2.5rem; font-weight: 700; color: var(--luxury-gold); margin-top: 5px; }
+        .stat-label { font-size: 0.8rem; text-transform: uppercase; color: var(--gray-600); }
+
+        /* Forms & Buttons */
+        input[type="email"],
+        input[type="password"],
+        input[type="text"],
+        input[type="number"],
+        input[type="datetime-local"] {
+            width: calc(100% - 20px);
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            border: 1px solid var(--gray-400);
+            border-radius: 6px;
+            box-sizing: border-box;
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--luxury-gold);
+            outline: none;
+        }
+
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s, opacity 0.3s;
+            margin-left: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--luxury-gold);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: #b89758;
+        }
+
+        .btn-secondary {
+            background-color: var(--gray-400);
+            color: var(--primary-black);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--gray-600);
+            color: var(--white);
+        }
+
+        .btn-danger {
+            background-color: var(--alert-red);
+            color: var(--white);
+            padding: 5px 10px;
+            font-size: 0.8rem;
+        }
+        
+        /* Layout Grid */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .grid-col-1 { grid-column: span 1; }
+        .grid-col-2 { grid-column: span 2; }
+
+        .card {
+            background-color: var(--gray-50);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: var(--shadow-light);
+        }
+        
+        .card-auth {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background-color: var(--white);
+            border: 1px solid var(--gray-200);
+        }
+
+        /* Table */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: 15px;
+        }
+
+        .data-table th, .data-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: none;
+        }
+
+        .data-table th {
+            background-color: var(--primary-black);
+            color: var(--white);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .data-table tr:first-child th:first-child { border-top-left-radius: 8px; }
+        .data-table tr:first-child th:last-child { border-top-right-radius: 8px; }
+
+        .data-table tbody tr {
+            background-color: var(--white);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border-radius: 8px;
+            transition: transform 0.1s;
+        }
+
+        .data-table tbody tr:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .data-table tbody td:first-child { border-top-left-radius: 8px; border-bottom-left-radius: 8px; }
+        .data-table tbody td:last-child { border-top-right-radius: 8px; border-bottom-right-radius: 8px; }
+
+        /* Calendar */
+        .calendar-header {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            font-weight: 600;
+            background-color: var(--primary-black);
+            color: var(--white);
+            padding: 10px 0;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .day-label {
+            text-align: center;
+        }
+        
+        .calendar-grid {
+            border: 1px solid var(--gray-200);
+            border-top: none;
+        }
+        
+        .time-slot {
+            display: grid;
+            grid-template-columns: 80px repeat(7, 1fr);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .time-label {
+            padding: 10px 5px;
+            background-color: var(--gray-50);
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .day-cell {
+            padding: 5px;
+            border-left: 1px solid var(--gray-200);
+            min-height: 40px; 
+        }
+        
+        .appointment-slot {
+            background-color: var(--luxury-gold);
+            color: var(--white);
+            padding: 5px;
+            margin-bottom: 2px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        
+        .appointment-slot.completed {
+            background-color: var(--success-green);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useCallback, useMemo } = React;
+
+        const API_URL = 'https://estetiste-api.onrender.com';
+
+        // =================================================================
+        // API UTILITY & AUTHENTICATION LOGIC
+        // =================================================================
+
+        const getAuthHeaders = (token) => ({ 'Authorization': `Bearer ${token}` });
+
+        const apiCall = async (url, options = {}) => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                return { status: 401 }; 
+            }
+
+            const headers = {
+                ...options.headers,
+                ...getAuthHeaders(token)
+            };
+
+            if (options.body && !headers['Content-Type']) {
+                 headers['Content-Type'] = 'application/json';
+            }
+            
+            const response = await fetch(`${API_URL}${url}`, { ...options, headers });
+            
+            if (response.status === 401) {
+                localStorage.removeItem('token');
+                window.location.reload(); 
+                return;
+            }
+            
+            return response;
+        };
+        
+        const login = async (email, password, setIsLoggedIn, setError) => {
+            setError('');
+            try {
+                const response = await fetch(`${API_URL}/token`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ username: email, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.access_token);
+                    setIsLoggedIn(true);
+                } else {
+                    setError(data.detail || 'Credenziali non valide');
+                }
+            } catch (error) {
+                setError('Errore di connessione: ' + error.message);
+            }
+        };
+
+        const register = async (email, password, setIsLoggedIn, setError) => {
+            setError('');
+            try {
+                const response = await fetch(`${API_URL}/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('token', data.access_token);
+                    setIsLoggedIn(true);
+                } else {
+                    setError(data.detail || 'Registrazione fallita');
+                }
+            } catch (error) {
+                setError('Errore di connessione: ' + error.message);
+            }
+        };
+
+        const logout = (setIsLoggedIn) => {
+            localStorage.removeItem('token');
+            setIsLoggedIn(false);
+        };
+        
+        // =================================================================
+        // COMPONENTS
+        // =================================================================
+        
+        const LoginPage = ({ setIsLoggedIn }) => {
+            const [email, setEmail] = useState('');
+            const [password, setPassword] = useState('');
+            const [isRegistering, setIsRegistering] = useState(false);
+            const [error, setError] = useState('');
+
+            const handleSubmit = (e) => {
+                e.preventDefault();
+                if (isRegistering) {
+                    register(email, password, setIsLoggedIn, setError);
+                } else {
+                    login(email, password, setIsLoggedIn, setError);
+                }
+            };
+
+            return (
+                <div className="card-auth">
+                    <h1>{isRegistering ? 'Registrazione' : 'Login'}</h1>
+                    {error && <p style={{ color: '#e74c3c', marginBottom: '10px' }}>{error}</p>} 
+                    <form onSubmit={handleSubmit}>
+                        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+                        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Password" required />
+                        <button type="submit" className="btn btn-primary" style={{ width: '100%', marginBottom: '10px' }}>
+                            {isRegistering ? 'Registrati' : 'Accedi'}
+                        </button>
+                    </form>
+                    <button className="btn btn-secondary" style={{ width: '100%' }} onClick={() => setIsRegistering(!isRegistering)}>
+                        {isRegistering ? 'Hai già un account? Accedi' : 'Nuovo? Registrati'}
+                    </button>
+                </div>
+            );
+        };
+
+        const StatCard = ({ label, value, unit = '' }) => (
+            <div className="card">
+                <div className="stat-label">{label}</div>
+                <div className="stat-value" style={{color: '#c9a961'}}>{value}{unit}</div>
+            </div>
+        );
+
+        const AppointmentForm = ({ loadAppointments, loadStats }) => {
+            const [data, setData] = useState({ client_name: '', service_name: '', price: '', datetime: '' });
+
+            const handleChange = (e) => {
+                setData({ ...data, [e.target.name]: e.target.value });
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                const appointmentData = {
+                    ...data,
+                    price: parseFloat(data.price),
+                    datetime: data.datetime.replace('T', ' ') + ':00' 
+                };
+
+                const response = await apiCall('/appointments', {
+                    method: 'POST',
+                    body: JSON.stringify(appointmentData)
+                });
+
+                if (response && response.ok) {
+                    setData({ client_name: '', service_name: '', price: '', datetime: '' }); 
+                    loadAppointments();
+                    if (loadStats) loadStats(); 
+                } else {
+                    alert('Errore nella creazione appuntamento. Verifica i dati inseriti.');
+                }
+            };
+
+            return (
+                <div className="card">
+                    <h3>Nuovo Appuntamento</h3>
+                    <form onSubmit={handleSubmit}>
+                        <input type="text" name="client_name" value={data.client_name} onChange={handleChange} placeholder="Nome Cliente" required />
+                        <input type="text" name="service_name" value={data.service_name} onChange={handleChange} placeholder="Servizio" required />
+                        <input type="number" name="price" value={data.price} onChange={handleChange} placeholder="Prezzo" step="0.01" required />
+                        <input type="datetime-local" name="datetime" value={data.datetime} onChange={handleChange} required />
+                        <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>Aggiungi Appuntamento</button>
+                    </form>
+                </div>
+            );
+        };
+
+        const TransactionForm = ({ loadTransactions, loadStats }) => {
+            const [amount, setAmount] = useState('');
+            const [description, setDescription] = useState('');
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                const data = {
+                    amount: parseFloat(amount),
+                    description: description
+                };
+                
+                const response = await apiCall('/transactions', {
+                    method: 'POST',
+                    body: JSON.stringify(data)
+                });
+                
+                if (response && response.ok) {
+                    setAmount('');
+                    setDescription(''); 
+                    loadTransactions();
+                    loadStats(); 
+                } else {
+                    alert('Errore nella creazione transazione');
+                }
+            };
+
+            return (
+                <div className="card mt-4">
+                    <h3>Nuova Transazione</h3>
+                    <form onSubmit={handleSubmit} className="flex">
+                        <input type="number" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="Importo" step="0.01" required style={{flexGrow: 1, marginRight: '10px'}} />
+                        <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Descrizione (Opzionale)" style={{flexGrow: 2, marginRight: '10px'}} />
+                        <button type="submit" className="btn btn-primary" style={{flexGrow: 0}}>Registra</button>
+                    </form>
+                </div>
+            );
+        };
+        
+        const AppointmentsTable = ({ appointments, loadAppointments }) => {
+            const handleDelete = async (id) => {
+                if (window.confirm('Sei sicuro di voler eliminare questo appuntamento?')) {
+                    const response = await apiCall(`/appointments/${id}`, { method: 'DELETE' });
+                    if (response && response.status === 204) {
+                        loadAppointments();
+                    } else {
+                        alert('Errore nell\'eliminazione');
+                    }
+                }
+            };
+            
+            return (
+                <table className="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Data</th>
+                            <th>Cliente</th>
+                            <th>Servizio</th>
+                            <th>Prezzo</th>
+                            <th>Stato</th>
+                            <th>Azioni</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {appointments.map(apt => (
+                            <tr key={apt.id}>
+                                <td>{apt.id}</td>
+                                <td>{new Date(apt.datetime).toLocaleString('it-IT')}</td>
+                                <td>{apt.client_name}</td>
+                                <td>{apt.service_name}</td>
+                                <td>{apt.price}€</td>
+                                <td><span style={{color: apt.status === 'completed' ? '#27ae60' : '#3498db'}}>{apt.status}</span></td>
+                                <td>
+                                    <button className="btn btn-danger" onClick={() => handleDelete(apt.id)}>Elimina</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            );
+        };
+        
+        const TransactionsTable = ({ transactions }) => {
+             return (
+                <table className="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Data</th>
+                            <th>Importo</th>
+                            <th>Descrizione</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {transactions.map(t => (
+                            <tr key={t.id}>
+                                <td>{t.id}</td>
+                                <td>{new Date(t.date).toLocaleDateString('it-IT')}</td>
+                                <td>{t.amount}€</td>
+                            <td>{t.description || '-'}</td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            );
+        };
+        
+        const FedeApp = () => {
+            const [isLoggedIn, setIsLoggedIn] = useState(() => !!localStorage.getItem('token'));
+            const [appointments, setAppointments] = useState([]);
+            const [transactions, setTransactions] = useState([]);
+            const [stats, setStats] = useState({ total_appointments: 0, total_transactions: 0, total_revenue: 0 });
+            const [selectedDate, setSelectedDate] = useState(new Date());
+
+            const loadAppointments = useCallback(async () => {
+                const response = await apiCall('/appointments');
+                if (response && response.ok) {
+                    setAppointments(await response.json());
+                }
+            }, []);
+
+            const loadTransactions = useCallback(async () => {
+                const response = await apiCall('/transactions');
+                if (response && response.ok) {
+                    setTransactions(await response.json());
+                }
+            }, []);
+            
+            const loadStats = useCallback(async () => {
+                const response = await apiCall('/stats'); 
+                if (response && response.ok) {
+                    setStats(await response.json());
+                }
+            }, []);
+
+            const exportCSV = async (type) => {
+                const response = await apiCall(`/export/${type}.csv`);
+                if (response && response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `${type}-${new Date().toISOString().slice(0, 10)}.csv`;
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    alert('Errore nell\'esportazione CSV');
+                }
+            };
+
+            useEffect(() => {
+                if (isLoggedIn) {
+                    loadAppointments();
+                    loadTransactions();
+                    loadStats();
+                } else if (localStorage.getItem('token')) {
+                    setIsLoggedIn(true);
+                }
+            }, [isLoggedIn, loadAppointments, loadTransactions, loadStats]);
+            
+            const timeSlots = Array.from({ length: 18 }, (_, i) => `${9 + Math.floor(i / 2)}:${i % 2 === 0 ? '00' : '30'}`);
+
+            const getWeekDays = (date) => {
+                const startOfWeek = new Date(date);
+                startOfWeek.setDate(date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1)); 
+                const days = [];
+                for (let i = 0; i < 7; i++) {
+                    const day = new Date(startOfWeek);
+                    day.setDate(startOfWeek.getDate() + i);
+                    days.push(day);
+                }
+                return days;
+            };
+            
+            const getAppointmentsForDate = (date) => {
+                return appointments.filter(apt => {
+                    const aptDate = new Date(apt.datetime);
+                    return aptDate.toDateString() === date.toDateString();
+                }).map(apt => { 
+                    const aptDate = new Date(apt.datetime); 
+                    
+                    // Logica di arrotondamento per adattare l'orario ai slot di :00 o :30
+                    let hours = aptDate.getHours();
+                    let minutes = aptDate.getMinutes();
+                    
+                    let snappedMinutes;
+                    if (minutes < 30) {
+                        snappedMinutes = 0; 
+                    } else {
+                        snappedMinutes = 30; 
+                    }
+                    
+                    const snappedTime = `${hours}:${snappedMinutes < 10 ? '0' : ''}${snappedMinutes}`;
+
+                    return ({
+                        ...apt,
+                        time: snappedTime, 
+                        client_name: apt.client_name, 
+                        service_name: apt.service_name 
+                    });
+                });
+            };
+
+            if (!isLoggedIn) {
+                return <LoginPage setIsLoggedIn={setIsLoggedIn} />;
+            }
+
+            return (
+                <div className="container">
+                    <div className="flex justify-between items-center mb-4">
+                        <h1>Estetiste Dashboard</h1>
+                        <button className="btn btn-secondary" onClick={() => logout(setIsLoggedIn)}>Logout</button>
+                    </div>
+
+                    {/* STATISTICHE */}
+                    <div className="grid-3">
+                        <StatCard label="Fatturato Totale" value={stats.total_revenue.toLocaleString('it-IT')} unit="€" />
+                        <StatCard label="Appuntamenti Totali" value={stats.total_appointments} />
+                        <StatCard label="Transazioni Totali" value={stats.total_transactions} />
+                    </div>
+
+                    <div className="grid-3">
+                        {/* FORM APPOINTMENT */}
+                        <div className="grid-col-1">
+                            <AppointmentForm loadAppointments={loadAppointments} loadStats={loadStats} /> 
+                        </div>
+                        {/* FORM TRANSACTION */}
+                        <div className="grid-col-2">
+                             <TransactionForm loadTransactions={loadTransactions} loadStats={loadStats} />
+                        </div>
+                    </div>
+                    
+                    {/* LISTA DEGLI APPUNTAMENTI */}
+                    <h2>Appuntamenti Recenti</h2>
+                    <AppointmentsTable appointments={appointments} loadAppointments={loadAppointments} />
+
+                    {/* LISTA DELLE TRANSAZIONI */}
+                    <h2>Registro Transazioni</h2>
+                    <TransactionsTable transactions={transactions} />
+                    
+                    {/* EXPORT CSV */}
+                    <div className="mt-4 flex justify-between">
+                         <button className="btn btn-secondary" onClick={() => exportCSV('appointments')}>Esporta Appuntamenti CSV</button>
+                         <button className="btn btn-secondary" onClick={() => exportCSV('transactions')}>Esporta Transazioni CSV</button>
+                    </div>
+
+                    {/* CALENDARIO SETTIMANALE */}
+                    <h2>Calendario Settimanale</h2>
+                    <div className="card mt-4">
+                        <div className="flex justify-between items-center p-4" style={{backgroundColor: '#f8f9fa', borderRadius: '8px'}} className="mb-4">
+                             <button className="btn btn-primary" onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 7)))}>&lt; Settimana Precedente</button>
+                             <h3 style={{margin: 0}}>{getWeekDays(selectedDate)[0].toLocaleDateString()} - {getWeekDays(selectedDate)[6].toLocaleDateString()}</h3>
+                             <button className="btn btn-primary" onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() + 7)))}>Settimana Successiva &gt;</button>
+                        </div>
+                        
+                        <div className="calendar-container">
+                            <div className="calendar-header">
+                                <div className="day-label">Ora</div>
+                                {getWeekDays(selectedDate).map((day, index) => (
+                                    <div key={index} className="day-label">{day.toLocaleDateString('it-IT', { weekday: 'short', day: '2-digit', month: '2-digit' })}</div>
+                                ))}
+                            </div>
+                            <div className="calendar-grid">
+                                {timeSlots.map((slot, slotIdx) => (
+                                    <React.Fragment key={slotIdx}>
+                                        <div className="time-slot">
+                                            <div className="time-label text-mono" style={{backgroundColor: '#f8f9fa'}}>{slot}</div>
+                                            {getWeekDays(selectedDate).map((day, dayIdx) => {
+                                                const dayAppointments = getAppointmentsForDate(day).filter(apt => apt.time === slot);
+                                                return (
+                                                    <div key={dayIdx} className="day-cell">
+                                                        {dayAppointments.map(apt => (
+                                                            <div key={apt.id} className={`appointment-slot ${apt.status}`}>
+                                                                <div className="appointment-client">{apt.client_name}</div>
+                                                                <div className="appointment-service">{apt.service_name}</div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<FedeApp />, document.getElementById('root'));
+    </script>
+</body>
+</html>
