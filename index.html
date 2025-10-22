@@ -256,7 +256,7 @@
     <script type="text/babel">
         const { useState, useEffect, useCallback, useMemo } = React;
 
-        const API_URL = 'https://estetiste-api.onrender.com';
+        const API_URL = 'https://beauty.giancarlotonon.ai/api';
 
         // =================================================================
         // API UTILITY & AUTHENTICATION LOGIC
@@ -584,7 +584,7 @@
                 }
             }, [isLoggedIn, loadAppointments, loadTransactions, loadStats]);
             
-            const timeSlots = Array.from({ length: 18 }, (_, i) => `${9 + Math.floor(i / 2)}:${i % 2 === 0 ? '00' : '30'}`);
+            const timeSlots = Array.from({ length: 21 }, (_, i) => `${9 + Math.floor(i / 2)}:${i % 2 === 0 ? '00' : '30'}`);
 
             const getWeekDays = (date) => {
                 const startOfWeek = new Date(date);
